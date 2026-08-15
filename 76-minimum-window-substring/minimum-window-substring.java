@@ -1,51 +1,51 @@
 class Solution {
     public String minWindow(String s, String t) {
+     
+       //  2  HASHMAP SOLUTION
 
-        if(s.length() < t.length()) return "";
 
-        HashMap<Character,Integer> map = new HashMap<>();
+        if (s.length() < t.length()) return "";
 
-        for(char c : t.toCharArray()){
-            map.put(c, map.getOrDefault(c,0)+1);
+        HashMap<Character, Integer> need = new HashMap<>();
+        HashMap<Character, Integer> have = new HashMap<>();
+
+        for (char c : t.toCharArray()) {
+            need.put(c, need.getOrDefault(c, 0) + 1);
         }
 
         int left = 0;
-        int count = t.length();
-
-        int minLen = Integer.MAX_VALUE;
+        int count = 0;
         int start = 0;
+        int minLen = Integer.MAX_VALUE;
 
-        for(int right = 0; right < s.length(); right++){
+        for (int right = 0; right < s.length(); right++) {
 
-            char c = s.charAt(right);
+            char ch = s.charAt(right);
+            have.put(ch, have.getOrDefault(ch, 0) + 1);
 
-            if(map.containsKey(c)){
-                if(map.get(c) > 0)
-                    count--;
-
-                map.put(c, map.get(c)-1);
+            if (need.containsKey(ch) && have.get(ch) <= need.get(ch)) {
+                count++;
             }
 
-            while(count == 0){
+            while (count == t.length()) {
 
-                if(right-left+1 < minLen){
-                    minLen = right-left+1;
+                if (right - left + 1 < minLen) {
+                    minLen = right - left + 1;
                     start = left;
                 }
 
                 char leftChar = s.charAt(left);
+                have.put(leftChar, have.get(leftChar) - 1);
 
-                if(map.containsKey(leftChar)){
-                    map.put(leftChar, map.get(leftChar)+1);
-
-                    if(map.get(leftChar) > 0)
-                        count++;
+                if (need.containsKey(leftChar)
+                        && have.get(leftChar) < need.get(leftChar)) {
+                    count--;
                 }
 
                 left++;
             }
         }
 
-        return minLen == Integer.MAX_VALUE ? "" : s.substring(start,start+minLen);
+        return minLen == Integer.MAX_VALUE ? "" : s.substring(start, start + minLen);
     }
 }
